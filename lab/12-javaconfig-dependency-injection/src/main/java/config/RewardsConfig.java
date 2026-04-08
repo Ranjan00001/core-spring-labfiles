@@ -1,5 +1,16 @@
 package config;
 
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import rewards.RewardNetwork;
+import rewards.internal.RewardNetworkImpl;
+import rewards.internal.account.AccountRepository;
+import rewards.internal.account.JdbcAccountRepository;
+import rewards.internal.restaurant.JdbcRestaurantRepository;
+import rewards.internal.restaurant.RestaurantRepository;
+import rewards.internal.reward.JdbcRewardRepository;
+import rewards.internal.reward.RewardRepository;
+
 import javax.sql.DataSource;
 
 /**
@@ -41,10 +52,40 @@ import javax.sql.DataSource;
  * - Note that return type of each bean method should be an interface
  *   not an implementation.
  */
-
+@Configuration // Tells spring to use this class as set of configuration instruction during application start up
 public class RewardsConfig {
 
 	// Set this by adding a constructor.
 	private DataSource dataSource;
+
+	@Bean("accountRepository")
+	public AccountRepository accountRepository() {
+		JdbcAccountRepository repository = new JdbcAccountRepository();
+		repository.setDataSource(dataSource);
+		return repository;
+	}
+
+	@Bean("restaurantRepository")
+	public RestaurantRepository restaurantRepository() {
+		JdbcRestaurantRepository repository = new JdbcRestaurantRepository();
+		repository.setDataSource(dataSource);
+		return  repository;
+	}
+
+	@Bean("rewardRepository")
+	public RewardRepository rewardRepository() {
+		JdbcRewardRepository repository = new JdbcRewardRepository();
+		repository.setDataSource(dataSource);
+		return repository;
+	}
+
+	@Bean("rewardNetwork")
+	public RewardNetwork rewardNetwork() {
+		return new RewardNetworkImpl(
+				accountRepository(),
+				restaurantRepository(),
+				rewardRepository()
+		);
+	}
 
 }
