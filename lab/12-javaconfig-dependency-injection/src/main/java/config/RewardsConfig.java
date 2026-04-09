@@ -58,6 +58,10 @@ public class RewardsConfig {
 	// Set this by adding a constructor.
 	private DataSource dataSource;
 
+	public RewardsConfig(DataSource ds) {
+		this.dataSource = ds;
+	}
+
 	@Bean("accountRepository")
 	public AccountRepository accountRepository() {
 		JdbcAccountRepository repository = new JdbcAccountRepository();
